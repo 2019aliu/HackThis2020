@@ -29,7 +29,7 @@ function Login(props) {
       credentials: "include",
       body: JSON.stringify(data),
     };
-    fetch("/login", requestOptions)
+    fetch("/api/login", requestOptions)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
