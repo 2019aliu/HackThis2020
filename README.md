@@ -8,7 +8,9 @@ Created by: Alex Liu, Christopher Lo, Jinay Jain, Noelle Crawford, Joy Liu, Alex
 2. Install [Python 3](https://www.python.org/downloads/)
 3. Run `installApp.sh`
 
-Start the backend server
+Run two terminals:
+- In the first one, run `cd frontend && yarn start`
+- In the second one, run `cd backend && . venv/bin/activate && python app.py`
 
 ## The Magic Behind Feynman: Feynman's Technique
 
