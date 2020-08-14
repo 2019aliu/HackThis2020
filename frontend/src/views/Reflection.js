@@ -1,4 +1,7 @@
 import React from "react";
+import { Link, useHistory } from "react-router-dom"
+import { api } from "../api"
+import { useForm } from "react-hook-form"
 
 // import Card from "../components/Card/card";
 
@@ -9,19 +12,30 @@ AOS.init({
     duration: 1200,
 })
 
-class Reflection extends React.Component {
+function Reflection() {
+  const history = useHistory();
+  const { register, handleSubmit } = useForm();
 
-  send_email() {
-    console.log("HI")
-    console.log("Text:" + this.state.text)
+  function onSubmit(data) {
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'SameSite':'Lax' },
+      credentials: 'include',
+      body: JSON.stringify({
+        topic: "asdf",
+        body: data.content
+      }),
+    };
+
+    fetch('/summary', requestOptions)
+    console.log(data);
   }
 
-  render() {
     return (
       <div className={styles.container}>
         <div data-aos="fade-right" className={styles.summaryContainer}>
           <form id="summary">
-            <textarea name="text" placeholder="Write some thoughts here..."></textarea>
+            <textarea name="content" placeholder="How did it go? Reflect on your experience..." ref={register}></textarea>
           </form>
         </div>
         <div data-aos="fade-left" className={styles.textContainer}>
@@ -48,16 +62,17 @@ class Reflection extends React.Component {
           </div>
           <div data-aos="fade-up" className={styles.buttonContainer}>
             <div className={styles.reflectionButton}>
-              <button onclick={() => this.sendEmail}>Email me my reflection</button>
+              <button onClick={handleSubmit(onSubmit)}>Email me my reflection</button>
             </div>
             <div className={styles.topicButton}>
-              <button>I want to learn another topic</button>
+              <div className={styles.linkButton}>
+                <Link to="/">I want to learn another topic</Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
     );
-  }
 }
 
 export default Reflection;

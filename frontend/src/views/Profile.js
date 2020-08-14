@@ -96,7 +96,7 @@ export default function Profile(props) {
           </Card>
           <Card
             add={false}
-            backgroundColor="#636D73"
+            backgroundColor={colors.mutedColor2}
             width="150px"
             height="60px"
             borderRadius="20px"

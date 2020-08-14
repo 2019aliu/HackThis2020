@@ -3,8 +3,26 @@
 
 .container {
   position: relative;
-  background-color: #fafafa;
+  // background-color: #fafafa;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.container::before {
+  opacity: 0.15;
+  content: "";
+  background: url("../assets/explosion.svg");
+  background-size: 70vw 70vw;
+  background-repeat: no-repeat;
+  background-position-x: center;
+  top: 0;
+  // left: 7.5vw;
+  width: 100vw;
+  height: 100%;
+  opacity: .2; 
+  z-index: -1;
+  position: absolute;
 }
 
 .searchContainer {
@@ -32,7 +50,7 @@
 
 .cardContainer {
   display: flex;
-  margin: 7.5vh auto 10vh;
+  margin: 7.5vh auto 40vh;
   align-items: center;
   justify-content: center;
   gap: 5vw;
@@ -44,7 +62,7 @@
 
 .learningContainer {
   display: flex;
-  margin-bottom: 10vh;
+  margin-bottom: 5vh;
   gap: 5vw;
 
   .living {

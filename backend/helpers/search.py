@@ -123,14 +123,11 @@ def searchTopic(searchTerm):
     resultList = {}
 
     for queryResult in res['responses']:
-        print("ENTRY")
         for entry in queryResult['hits']['hits']:
-            print(entry)
             resultList[entry['_source']['objectid']] = {
                 'topic': entry['_source']['title'],
                 'subject': entry['_source']['subject']
             }
-        print("ENTRIES")
             
     return resultList
 

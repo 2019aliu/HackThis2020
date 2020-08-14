@@ -2,6 +2,14 @@
 
 Created by: Alex Liu, Christopher Lo, Jinay Jain, Noelle Crawford, Joy Liu, Alex Zhang, Marcelo Morales
 
+## Usage
+
+1. Install [yarn](https://yarnpkg.com/)
+2. Install [Python 3](https://www.python.org/downloads/)
+3. Run `installApp.sh`
+
+Start the backend server
+
 ## The Magic Behind Feynman: Feynman's Technique
 
 The Feynman Learning Technique consists of the following:

@@ -4,8 +4,8 @@
       "/**": "index.html"
     },
     "proxies": {
-        "/api/": {
-          "origin": "${API_URL}"
+        "/": {
+          "origin": "http://localhost:5000"
         }
     }
   }

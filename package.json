@@ -4,6 +4,7 @@
   "description": "A world class education initiative to not only help you learn, but also help you understand.",
   "main": "App.js",
   "scripts": {
+    "dist": "cd frontend && yarn && yarn build && yarn global add serve && serve -s build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

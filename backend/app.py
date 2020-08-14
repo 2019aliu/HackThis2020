@@ -151,16 +151,14 @@ def fetch_user_data():
 @app.route('/summary', methods=["POST"])
 # @cross_origin(supports_credentials=True)
 def send_summary(): 
-    body = request.form.get('body')
-    topic = request.form.get('topic')
-    email = loads(session["user_info"])
+    req = request.get_json()
+    body = req['body']
+    topic = req['topic']
+    print(body, topic)
+    email = "" # TODO: fix D:
     msg = Message(subject="Your summary from " + topic, sender=app.config.get("MAIL_USERNAME"), recipients=[email])
     msg.html = render_template("email.html", content=body)
     mail.send(msg)
-    topic = req['topic'].lower()
-    subject = req['subject'].lower()
-    topics.create_topic(topic, subject)
-    search.populateSubjectTopic()
     return "DONE"
 
 @app.route('/remove_topic', methods=["POST"])

@@ -89,7 +89,9 @@
     height: 30%;
     margin: 0 auto 5vw;
 
-    button {
+    button, .linkButton {
+      text-decoration: none;
+      color: black;
       border-radius: 15px;
       padding: 15px;
       border: none;
@@ -100,11 +102,11 @@
       transition: 150ms;
     }
 
-    button:focus {
+    button:focus, .linkButton:focus {
       outline: 0;
     }
 
-    button:active {
+    button:active, .linkButton:active {
       transition: 150ms;
       box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
     }
@@ -115,7 +117,12 @@
     height: 30%;
     margin: 0 auto 5vw;
 
-    button {
+    button, .linkButton {
+      text-align: center;
+      a {
+        text-decoration: none;
+        color: black;
+      }
       border-radius: 15px;
       padding: 15px;
       border: none;
@@ -126,11 +133,11 @@
       transition: 150ms;
     }
 
-    button:focus {
+    button:focus, .linkButton:focus {
       outline: 0;
     }
 
-    button:active {
+    button:active, .linkButton:active {
       transition: 150ms;
       box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
     }

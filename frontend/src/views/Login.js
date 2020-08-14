@@ -16,7 +16,7 @@ function Login(props) {
   function onSubmit(data) {
     console.log(data);
 
-    //   data validation
+    //   data validatidat
     const message = credentialValidation(data);
     if (message.length > 0) {
         setCredentialErrors(message);
@@ -29,7 +29,7 @@ function Login(props) {
       credentials: "include",
       body: JSON.stringify(data),
     };
-    fetch("/api/login", requestOptions)
+    fetch("/login", requestOptions)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
