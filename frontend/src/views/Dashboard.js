@@ -17,6 +17,7 @@ export default function Dashboard(props) {
     const history = useHistory();
     const [searchTerm, setSearchTerm] = useState("");
     const [cardColors, setCardColors] = useState([]);
+    const [userPrefs, setUserPrefs] = useState([]);
 
     function handleSearchChange(result) {
         setSearchTerm(result);
@@ -34,9 +35,10 @@ export default function Dashboard(props) {
         console.log(searchTerm);
     }, [searchTerm])
 
-    // retrieve user interests here:
-    // const userPrefs = somethingsomethinghere
-    const userPrefs = ["Pharmaceuticals", "Biomedical Engineering", "Complex Algebra"]
+    useEffect(() => {
+        const interests = Cookies.get("interests")
+        if(interests) setUserPrefs(interests.split("\\054").slice(0,-1))
+    }, []);
 
     return (
         <div className={styles.dashboardContainer}>
@@ -64,17 +66,15 @@ export default function Dashboard(props) {
                         } else {
                             fontSize = "24px";
                         }
-                        return <div key={index} className={styles.cardWrapper}><Card add={false}
+                        return <Link style={{ textDecoration: "none", color: "black"}} key={index} className={styles.cardWrapper} to={`/search?q=${pref.replace(' ', '+')}`}><Card add={false}
                         width="100%"
                         height="150px"
                         borderRadius="30px"
                         fontSize={fontSize}
                         backgroundColor={cardColors[index % cardColors.length]}
                         >
-                            <Link style={{color: "black", textDecoration: "none"}} to={`/search?q=${pref.replace(' ', '+')}`}>
                                 <h3 style={{fontWeight: 400}}>{pref}</h3>
-                            </Link>
-                        </Card></div>
+                        </Card></Link>
                     })}
                 </div>
             </div>

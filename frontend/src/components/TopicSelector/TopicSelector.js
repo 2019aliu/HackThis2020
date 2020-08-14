@@ -11,10 +11,6 @@ function TopicSelector({ subjects, setSubjects, maxSubjects, style }) {
     const [available, setAvailable] = useState([]);
 
     useEffect(() => {
-        console.log(subjects);
-    }, [subjects])
-
-    useEffect(() => {
         async function fetchSubjects() {
             try {
                 const result = await api.get("/get_subjects")

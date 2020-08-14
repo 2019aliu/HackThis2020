@@ -31,14 +31,14 @@ class Faq extends React.Component {
     const cardWidth = "90vw"
 
     const questions = [new Question("What is the Feynman Technique?",
-                                    "The Feynman Technique is a method used to effectively learning a concept. \
-                                    It involves first learning the content, then explaining it to someone that is 5 years old, \
-                                    then identifying gaps in your explanation; going back to relearn if necessary.", "fade-right", colors.mutedColor1),
+                                    "The Feynman Technique is a method used to effectively learning a concept.\n"+
+                                    "It involves first learning the content, then explaining it to someone that is 5 years old,\n"+
+                                    "then identifying gaps in your explanation; going back to relearn if necessary.", "fade-right", colors.mutedColor1),
                        new Question("Why should I use this technique?", 
-                                    "It's a great method to effectively learn something. \
-                                    By being able to explain it to a 5-year old, you know you have internalized the concept. \
-                                    You are also able to talk to an expert live to identify gaps in your knowledge. \
-                                    On this website, you can even look at other people's explanations to learn from them!", "fade-left", colors.mutedColor2)]
+                                    "It's a great method to effectively learn something.\n"+
+                                    "By being able to explain it to a 5-year old, you know you have internalized the concept.\n"+
+                                    "You are also able to talk to an expert live to identify gaps in your knowledge.\n"+
+                                    "On this website, you can even look at other people's explanations to learn from them!", "fade-left", colors.mutedColor2)]
     const output = questions.map((questions) => 
         <div data-aos={questions.fadeDir} data-aos-duration='500' data-aos-delay='600' className={styles.cardContainer}>
             <Tile 

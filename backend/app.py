@@ -11,7 +11,7 @@ from flask_pymongo import pymongo
 from flask_cors import CORS, cross_origin
 from flask_mail import Mail, Message
 
-from bson.json_util import loads, dumps
+from bson.json_util import loads, dumps, ObjectId
 import uuid
 import os, sys, time
 
@@ -21,11 +21,11 @@ sys.path.append(os.path.abspath('./helpers'))
 import auth
 import db
 import search
+import topics
 index_subject = "subject"
 index_topic = "topic"
 import linkScraper
 import wikipediaSummary
-
 
 # # Set this variable to "threading", "eventlet" or "gevent" to test the
 # # different async modes, or leave it set to None for the application to choose
@@ -157,14 +157,18 @@ def send_summary():
     msg = Message(subject="Your summary from " + topic, sender=app.config.get("MAIL_USERNAME"), recipients=[email])
     msg.html = render_template("email.html", content=body)
     mail.send(msg)
+    topic = req['topic'].lower()
+    subject = req['subject'].lower()
+    topics.create_topic(topic, subject)
+    search.populateSubjectTopic()
     return "DONE"
 
-@app.route('/create_topic', methods=["POST"])
-# @cross_origin(supports_credentials=True)
-def new(topic, subject):
-    topic = request.form.get('topic').lower()
-    subject = request.form.get('subject').lower()
-    topics.create_topic(topic, subject)
+@app.route('/remove_topic', methods=["POST"])
+def delete_topic():
+    req = request.get_json()
+    topic = req['topic'].lower()
+    db.db.topics.delete_one({"title":topic})
+    search.populateSubjectTopic()
     return "DONE"
 
 @app.route('/get_subjects')
@@ -176,9 +180,19 @@ def get_subjects():
 def get_topics():
     return dumps(db.db.topics.find({}))
 
+# create a new topic
+@app.route('/create_topic', methods=['POST'])
+def createTopic():
+    title = request.get_json()['topic']
+    subject = request.get_json()['subject']
+    result = topics.create_topic(title, subject)
+    search.populateSubjectTopic()
+    return (' ', 201)
+
 # Search functionality
 @app.route('/search')
 def searchSubjectTopic():
+    search.populateSubjectTopic()
     searchTerm = request.args.get('q')
     return dumps(search.searchTopic(searchTerm))
 
@@ -195,21 +209,25 @@ def makeWikipediaSummary():
     return dumps(wikipediaSummary.generateWikipediaSummary(searchTerm));
 
 # CHAT FUNCTION HERE
-@app.route('/messages/make_room')
+@app.route('/messages/join_room', methods=["POST"])
 def make_room():
-    
-    # If logged out and trying to troll
-    if not request.cookies.get('login_info'):
-        return redirect(url_for('home'))
-    else:
-        #Generate Room ID
-        # random_room_id = "temp"
-        random_room_id = uuid.uuid4().hex # access the _id of subjects instead of rng 
-        res = make_response(redirect(url_for('sessions', room_id = random_room_id)))
-        res.set_cookie("room_id", value=random_room_id, max_age=None)
-        return res
+    req = request.get_json()
+    topic = req["topic"]
+    room_id = hash(topic)
+    res = make_response("DONE")
+    print(room_id)
+    res.set_cookie("room_id", value=str(room_id), max_age=None)
+    res.set_cookie("topic", value=str(topic), max_age=None)
+    return res
 
-@app.route('/messages/<room_id>')
+@app.route('/messages/leave_room')
+def leave_room():
+    res = make_response("DONE")
+    res.set_cookie("room_id", value="bye", max_age=0)
+    res.set_cookie("topic", value="bye", max_age=0)
+    return res
+
+'''@app.route('/messages/<room_id>')
 def sessions(room_id):
     username = request.cookies.get('login_info')
     room = request.cookies.get('room_id')
@@ -222,7 +240,7 @@ def sessions(room_id):
         #username = request.cookies.get('login_info')
         #room = request.cookies.get('room_id')
         #return render_template('message.html', username = username, room = room)
-
+'''
 def messageReceived(methods=['GET', 'POST']):
     print('Message Received') 
 
@@ -239,12 +257,12 @@ def message(data):
 @socketio.on('join')
 def on_join(data):
     join_room(data["room"])
-    socketio.send({"msg": data["from_username"] + " has joined the room " + data["room"]}, room = data["room"])
+    socketio.send({"msg": data["from_username"] + " has joined the room"}, room = data["room"])
 
 @socketio.on('leave')
 def on_leave(data):
-    leave_room(data["room"])
-    socketio.send({"msg": data["from_username"] + " has left the room " + data["room"]}, room = data["room"])
+    leave_room()
+    socketio.send({"msg": data["from_username"] + " has left the room"}, room = data["room"])
 
 @app.after_request
 def middleware_for_response(response):
@@ -253,9 +271,9 @@ def middleware_for_response(response):
     return response
 
 if __name__ == '__main__':
+    search.initializeIndexSubject()
+    search.populateSubjectTopic()
     socketio.run(app, debug=True)
-    initializeIndexSubject()
-    populateSubjectTopic()
 
 # Unused code
 '''
@@ -268,7 +286,6 @@ def login():
     password = req['password']
     session["user_info"] = auth.login(username, password)
     return session["user_info"]
-
 @app.route('/register', methods=["POST"])
 @cross_origin(supports_credentials=True)
 def register():
@@ -283,5 +300,4 @@ def register():
         mail.send(msg)
         return "DONE"
     return msg_string
-
 '''

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 
 import Card from "../components/Card/card";
 import Tile from "../components/Tile/Tile";
@@ -22,7 +21,6 @@ export default function CreateNew(props) {
     const [searchResults, setSearchResults] = useState([]);
     const [summary, setSummary] = useState("");
 
-    console.log(props.location.state.topic);
     const topic = props.location.state.topic;
     // const topic = "pythagoras"; // test term
     const googleSearchTerm = topic.replace(' ', '+');
@@ -73,8 +71,8 @@ export default function CreateNew(props) {
                         boxShadow="-4px 4px 4px rgba(0,0,0,0.5)">
                     <h2 style={{textAlign: "center", fontWeight: "normal", fontSize: "28px"}}>Quick References</h2>
                     <div className={styles.logoContainer}>
-                        <a href={`https://www.google.com/search?q=${googleSearchTerm}`}><img src={GoogleLogo} alt="Link to Google search"/></a>
-                        <a href={`https://en.wikipedia.org/w/index.php?search=${wikipediaSearchTerm}`}><img src={WikipediaLogo} alt="Link to Wikipedia page"/></a>
+                        <a target="_blank" rel="noopener noreferrer" href={`https://www.google.com/search?q=${googleSearchTerm}`}><img src={GoogleLogo} alt="Link to Google search"/></a>
+                        <a target="_blank" rel="noopener noreferrer" href={`https://en.wikipedia.org/w/index.php?search=${wikipediaSearchTerm}`}><img src={WikipediaLogo} alt="Link to Wikipedia page"/></a>
                     </div>
                 </Tile>
                 <Card
@@ -83,19 +81,29 @@ export default function CreateNew(props) {
                     width="100%"
                     height="75px"
                     borderRadius="20px"
-                    onClick={(event) => {
-                        const alphanumeric = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890"
-                        if (searchTerm.length === 0 || !searchTerm.includes(alphanumeric)) {
-                            console.log("not a valid term")
-                            event.preventDefault();
-                        }
+                    onClick={() => {
+                        console.log(searchResults)
+                        // first we make a topic
+                        const requestOptions = {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'SameSite':'None' },
+                            credentials: 'include',
+                            body: JSON.stringify({"topic":topic, "subject":searchResults[0]}),
+                          };
+                          fetch('/create_topic', requestOptions)
+
+                        // then a room
+                        const requestOptions2 = {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'SameSite':'None' },
+                            credentials: 'include',
+                            body: JSON.stringify({"topic":topic}),
+                          };
+                          fetch('/messages/join_room', requestOptions2).then(() => {
+                              props.history.push("/chat")
+                          })
                     }}>
-                    <Link to="/chat" style={{textDecoration: "none", color: "black"}} data={{
-                        isSummarizer: true,
-                        summary: summary
-                    }}>
-                        I'm Ready
-                    </Link>
+                    <h1 style={{textAlign: "center", fontWeight: "normal", fontSize: "28px"}}>I'm Ready</h1>
                 </Card>
             </div>
         </div>

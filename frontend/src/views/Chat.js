@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { socket } from "../api";
+import Cookies from 'js-cookie';
 import Card from "../components/Card/card";
 import styles from "../styles/Chat.module.scss";
 
@@ -14,7 +15,7 @@ AOS.init({
 const connectMsg = "Connected. Say hello!";
 const disconnectMsg = "Disconnected";
 
-function Chat() {
+function Chat(props) {
     const history = useHistory();
 
     const [messages, setMessages] = useState([]);
@@ -33,21 +34,28 @@ function Chat() {
     }
 
     function onFinish() {
-        history.push('/reflection')
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'SameSite':'None' },
+            credentials: 'include',
+          };
+          fetch('/messages/leave_room', requestOptions).then(() => {
+            history.push('/reflection')
+          })
     }
 
     useEffect(() => {
         // joining and leaving the rooms on page load/unload
 
         socket.emit("join", {
-            from_username: "bobthebuilder",
-            room: "temp"
+            from_username: Cookies.get("username"),
+            room: Cookies.get("room_id") || "temp"
         })
 
         return () => {
             socket.emit("leave", {
-                from_username: "bobthebuilder",
-                room: "temp"
+                from_username: Cookies.get("username"),
+                room: Cookies.get("room_id") || "temp"
             })
         }
 
@@ -88,17 +96,17 @@ function Chat() {
         console.log(data);
         socket.send({
             msg: data.content,
-            from_username: data.username || "Feynman",
-            room: "temp",
+            from_username: Cookies.get("username") || "Feynman",
+            room: Cookies.get("room_id") || "temp",
         });
     }
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title} data-aos="fade-up" data-aos-once="true">Physics: Simple Harmonic Motion</h1>
+            <h1 className={styles.title} data-aos="fade-up" data-aos-once="true">{Cookies.get("topic")}</h1>
             <h3 className={styles.status} data-aos="fade-up" data-aos-delay="400" data-aos-once="true">{status}</h3>
             <div className={styles.windowContainer} data-aos="fade" data-aos-delay="800" data-aos-once="true">
-                <div className={styles.messageWindow}>
+                <div className={styles.messageWindow}> 
                     {messages.map((message, idx) => {
                         let showName = true;
 
@@ -110,7 +118,7 @@ function Chat() {
                         }
 
                         return (
-                            <div className={styles.message}>
+                            <div key={message.time} className={styles.message}>
                                 {showName && (
                                     <p className={styles.username}>
                                         {message.username}
@@ -174,6 +182,7 @@ function Chat() {
                 className={styles.chatBox}
                 data-aos="fade-down"
                 data-aos-once="true"
+                data-aos-offset="-500"
             >
                 <input
                     autoFocus={true}

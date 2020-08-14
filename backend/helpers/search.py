@@ -38,6 +38,7 @@ def initializeIndexSubject():
     }})
 
 def populateSubjectTopic():
+    es.indices.delete(index='*', ignore=[400, 404])
     # populate subjects
     subjectIDCount = 0
     for doc in subjects.find({}):
@@ -54,7 +55,9 @@ def populateSubjectTopic():
     for doc in topics.find({}):
         convertedBody = {
             'title': doc['title'],
-            'subject': subjects.find_one({"_id": doc['subject_id']})["title"]
+            'subject': subjects.find_one({"_id": doc['subject_id']})["title"],
+            'test': 'test',
+            'objectid': str(doc['_id'])
         }
         es.index(index=index_topic, id=topicIDCount, body=convertedBody)
         topicIDCount += 1
@@ -116,14 +119,21 @@ def searchTopic(searchTerm):
     # as you can see, you just need to feed the <body> parameter,
     # and don't need to specify the <index> and <doc_type> as usual 
     res = es.msearch(body = request)
-    print(res)
 
     resultList = {}
 
     for queryResult in res['responses']:
+        print("ENTRY")
         for entry in queryResult['hits']['hits']:
-            resultList[entry['_source']['title']] = entry['_source']['subject']
-    
+            print(entry)
+            resultList[entry['_source']['objectid']] = {
+                'topic': entry['_source']['title'],
+                'subject': entry['_source']['subject']
+            }
+        print("ENTRIES")
+            
     return resultList
 
-print(searchTopic("physics"))
+# initializeIndexSubject()
+# populateSubjectTopic()
+# print(searchTopic("physics"))

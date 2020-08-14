@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
 
 import Card from "../components/Card/card";
 import Tile from "../components/Tile/Tile";
@@ -21,6 +20,8 @@ export default function Info(props) {
     const [summary, setSummary] = useState("");
 
     const topic = props.location.state.topic;
+    const room = props.location.state.room;
+    console.log(room);
     const googleSearchTerm = topic.replace(' ', '+');
     const wikipediaSearchTerm = topic.replace(' ', '_');
 
@@ -33,8 +34,12 @@ export default function Info(props) {
         populateLinks();
         async function populateSummary() {
             const fetchedSummary = await (await fetch(`/getWikipediaSummary?searchTerm=${wikipediaSearchTerm}`)).json();
-            // console.log(fetchedSummary);
+
             setSummary(fetchedSummary);
+
+            if(fetchedSummary === "") {
+                setSummary("Your topic was more powerful than our AI could handle. Awesome! If you're looking for more information, check out the other links we've provided you.")
+            }
         }
         populateSummary();
     }, []);
@@ -55,8 +60,8 @@ export default function Info(props) {
                         height="500px"
                         borderRadius="20px"
                         boxShadow="-4px 4px 4px rgba(0,0,0,0.5)">
-                    <h2 style={{textAlign: "center", fontWeight: "normal", fontSize: "28px", marginTop: "-20px"}}><br/>Summary</h2>
-                    <p style={{height: "30vw", marginBottom: "20px"}}>{summary}</p>
+                    <h2 style={{textAlign: "center", fontWeight: "normal", fontSize: "28px", marginTop: "-20px"}}><br/>AI Generated Summary</h2>
+                    <p style={{overflow: "auto", height: "30vw", marginBottom: "20px"}}>{summary}</p>
                 </Tile>
             </div>
             <div className={styles.rightHalf} data-aos="fade-left" data-aos-duration="500">
@@ -67,8 +72,8 @@ export default function Info(props) {
                         boxShadow="-4px 4px 4px rgba(0,0,0,0.5)">
                     <h2 style={{textAlign: "center", fontWeight: "normal", fontSize: "28px"}}>Quick References</h2>
                     <div className={styles.logoContainer}>
-                        <a href={`https://www.google.com/search?q=${googleSearchTerm}`}><img src={GoogleLogo} alt="Link to Google search"/></a>
-                        <a href={`https://en.wikipedia.org/w/index.php?search=${wikipediaSearchTerm}`}><img src={WikipediaLogo} alt="Link to Wikipedia page"/></a>
+                        <a target="_blank" rel="noopener noreferrer" href={`https://www.google.com/search?q=${googleSearchTerm}`}><img src={GoogleLogo} alt="Link to Google search"/></a>
+                        <a target="_blank" rel="noopener noreferrer" href={`https://en.wikipedia.org/w/index.php?search=${wikipediaSearchTerm}`}><img src={WikipediaLogo} alt="Link to Wikipedia page"/></a>
                     </div>
                 </Tile>
                 <div className="infoLinkContainer">
@@ -76,7 +81,7 @@ export default function Info(props) {
                         const urlBaseRegex = /^.+?[^/:](?=[?/]|$)/g;
                         const startOfBaseUrl = link.match(urlBaseRegex);
 
-                        return <Card key={index}
+                        return <a target="_blank" rel="noopener noreferrer" href={link}><Card key={index}
                         add={false}
                         backgroundColor={colors.mutedColor2}
                         width="100%"
@@ -85,8 +90,8 @@ export default function Info(props) {
                         className="infoLink"
                         fontSize="1.2rem"
                         >
-                            <a href={link}>{startOfBaseUrl}</a>
-                        </Card>
+                            {startOfBaseUrl}
+                        </Card></a>
                     })}
                 </div>
                 <Card
@@ -95,7 +100,17 @@ export default function Info(props) {
                     width="100%"
                     height="75px"
                     borderRadius="20px"
-                    onClick={() => props.history.push("/chat")}>
+                    onClick={() => {
+                        const requestOptions = {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'SameSite':'None' },
+                            credentials: 'include',
+                            body: JSON.stringify({"topic":topic}),
+                          };
+                          fetch('/messages/join_room', requestOptions).then(() => {
+                              props.history.push("/chat")
+                          })
+                    }}>
                     <p>I'm Ready</p>
                 </Card>
             </div>

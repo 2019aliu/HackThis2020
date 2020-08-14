@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import Tile from '../components/Tile/Tile';
+import { credentialValidation } from '../utils';
 import styles from "../styles/Auth.module.scss";
+import colors from "../styles/colors.scss";
 import { Link } from "react-router-dom";
 import TopicSelector from "../components/TopicSelector/TopicSelector";
 
@@ -11,11 +14,19 @@ AOS.init({});
 
 function Register(props) {
     const [formStage, setFormStage] = useState(0);
+    const [credentialErrors, setCredentialErrors] = useState("");
 
     const [creds, setCreds] = useState({})
     const [interests, setInterests] = useState([])
 
     function onCredSubmit(data) {
+        // validate username and password
+        const message = credentialValidation(data);
+        if (message.length > 0) {
+            setCredentialErrors(message);
+            return;
+        }
+
       setCreds(data);
       setFormStage(formStage + 1);
     }
@@ -28,16 +39,15 @@ function Register(props) {
         credentials: 'include',
         body: JSON.stringify(data),
       };
-      fetch('/register', requestOptions).then(data => console.log(data).then(() => {
-          props.history.push("/dashboard")
-      }))
+      setFormStage(formStage + 1);
+      fetch('/register', requestOptions).then(data => console.log(data))
       
     }
 
     const stage =
         formStage === 0 ? (
-            <Credentials dataAos="fade-up" dataAosDuration="700" creds={creds} onSubmit={onCredSubmit} />
-        ) : (
+            <Credentials dataAos="fade-up" dataAosDuration="700" creds={creds} onSubmit={onCredSubmit} credentialErrors={credentialErrors}/>
+        ) : ( formStage === 1 ?
             <InterestSelect
                 dataAos="fade-up" 
                 dataAosDuration="700"
@@ -45,7 +55,24 @@ function Register(props) {
                 setInterests={setInterests}
                 back={() => setFormStage(formStage - 1)}
                 onSubmit={onInterestSubmit}
-            />
+            /> : (
+                <div data-aos="fade" data-aos-duration="700" style={{
+                    flex: 6,
+                    margin: "auto 20px",
+                    width: "90%",
+                    height: "200px",
+                }}>
+                    <Tile style={{
+                        textAlign: "center",
+                        boxShadow: "0 0 15px rgba(0,0,0,0.5)",
+                        borderRadius: "20px",
+                        backgroundColor: "#fafafa"
+                    }}>
+                        <h2>Awesome! One last thing</h2>
+                        <p>Check your email to verify your account, and you'll be on your way!</p>
+                    </Tile>
+                </div>
+            )
         );
 
     return (
@@ -66,7 +93,7 @@ function Register(props) {
     );
 }
 
-function Credentials({ creds, onSubmit, dataAos, dataAosDuration }) {
+function Credentials({ creds, onSubmit, dataAos, dataAosDuration, credentialErrors }) {
     const { register, handleSubmit } = useForm(
         {
             defaultValues: {
@@ -96,7 +123,7 @@ function Credentials({ creds, onSubmit, dataAos, dataAosDuration }) {
                     id="password"
                     ref={register}
                 />
-                <p>{/* error message */}</p>
+                <p style={{color: colors.warningColor, height: "2vh"}}>{credentialErrors}</p>
                 <label style={{marginTop: "60px"}} htmlFor="email">Email</label>
                 <input className={styles.inputText} type="email" name="email" id="email" ref={register} />
                 <button className={`${styles.floatingRight} ${styles.button}`}>
