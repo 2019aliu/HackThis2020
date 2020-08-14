@@ -1,0 +1,19 @@
+{
+  "name": "epiphany",
+  "version": "1.0.0",
+  "description": "A world class education initiative to not only help you learn, but also help you understand.",
+  "main": "App.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2019aliu/HackThis2020.git"
+  },
+  "author": "Qijia \"Joy\" Liu, Alexander Liu, Christopher Lo, Jinay Jain, Alex Zhang, Noelle Crawford, Marcelo Morales",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/2019aliu/HackThis2020/issues"
+  },
+  "homepage": "https://github.com/2019aliu/HackThis2020#readme"
+}
