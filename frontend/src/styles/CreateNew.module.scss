@@ -43,11 +43,60 @@ textarea:focus {
     }
 }
 
+.dontknow {
+    position: fixed;
+    margin-left: -100px; //half of width
+    left: 50%;
+    bottom: 10px;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.25);
+    white-space: pre-wrap;
+    cursor: pointer;
+
+    .topicCreation {
+        width: 400px;
+        text-align: left;
+        position: absolute;
+        margin-top: 30vh;
+        padding-left: 2vw;
+    }
+
+    .subject {
+        width: 400px;
+        text-align: left;
+        position: absolute;
+        margin-top: 30vh;
+        right: 2vw;
+    }
+}
+
 @media only screen and (max-width: 1000px) {
     .leftHalf, .rightHalf {
         width: 60vw;
     }
     .container {
         flex-direction: column;
+    }
+
+    .overlay {
+        .topicCreation {
+            width: 15vw;
+            position: relative;
+        }
+
+        .subject {
+            width: 15vw;
+            position: absolute;
+            top: 0vw;
+        }
     }
 }

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import Card from "../components/Card/card";
 import Tile from "../components/Tile/Tile";
@@ -16,6 +17,26 @@ AOS.init({
     duration: 1200,
 })
 
+function useOutsideAlerter(ref) {
+    useEffect(() => {
+        /**
+         * Alert if clicked on outside of element
+         */
+        function handleClickOutside(event) {
+            if (ref.current) {
+                document.getElementById("overlay").style.display="none";
+            }
+        }
+
+        // Bind the event listener
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            // Unbind the event listener on clean up
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [ref]);
+}
+
 export default function CreateNew(props) {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
@@ -26,6 +47,14 @@ export default function CreateNew(props) {
     const googleSearchTerm = topic.replace(' ', '+');
     const wikipediaSearchTerm = topic.replace(' ', '_');
 
+    const wrapperRef = useRef(null);
+    useOutsideAlerter(wrapperRef);
+
+    var text1 = "The blue box contains the topic you're going to create. \nIn the Summary box, summarize the topic to someone as if they are 5 years old. This helps to check if you have understood the topic."
+    var text2 = "In the Select one Subject box, choose a subject this topic falls under. \n";
+    text2 += "In the Quick References box, find some links that describe your topic. \n";
+    text2 += "When you've finished, click I'm Ready to chat with someone else!"
+
     function handleSearchChange(result) {        
         console.log(result);
         setSearchTerm(result);
@@ -33,6 +62,10 @@ export default function CreateNew(props) {
 
     function handleSummaryChange(event) {
         setSummary(event.target.value);
+    }
+
+    function OverlayOn() {
+        document.getElementById("overlay").style.display="block";
     }
 
     return (
@@ -105,6 +138,23 @@ export default function CreateNew(props) {
                     }}>
                     <h1 style={{textAlign: "center", fontWeight: "normal", fontSize: "28px"}}>I'm Ready</h1>
                 </Card>
+            </div>
+            <Card className={styles.dontknow}
+                add={false}
+                backgroundColor={colors.mutedColor4}
+                width="200px"
+                height="35px"
+                borderRadius="20px"
+                onClick={() => {
+                    OverlayOn()
+                }}>
+                <p style={{textAlign: "center", fontWeight: "normal", fontSize: "10px"}}>Don't know how this works?</p>
+            </Card>
+            <div>
+                <div ref={wrapperRef} id="overlay" className={styles.overlay}>
+                    <p className={styles.topicCreation}>{text1}</p>
+                    <p className={styles.subject}>{text2}</p>
+                </div>
             </div>
         </div>
     )
